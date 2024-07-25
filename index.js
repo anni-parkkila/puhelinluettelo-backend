@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     {
         "id": "1",
@@ -24,6 +26,8 @@ let persons = [
     }
 ]
 
+const generateId = () => Math.floor(Math.random() * 1000).toString();
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
@@ -41,6 +45,30 @@ app.get('/api/persons/:id', (request, response) => {
     } else {
         response.status(404).end()
     }
+})
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+    console.log(body)
+
+    if (!body.name) {
+        return response.status(400).json({
+            error: "Person's name missing"
+        })
+    } else if (!body.phonenumber) {
+        return response.status(400).json({
+            error: "Person's phonenumber missing"
+        })
+    }
+
+    const person = {
+        id: generateId(),
+        name: body.name,
+        phonenumber: body.phonenumber
+    }
+
+    persons = persons.concat(person)
+    response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
