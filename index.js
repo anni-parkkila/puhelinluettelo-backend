@@ -1,9 +1,12 @@
 const express = require('express')
 var morgan = require('morgan')
 const app = express()
-
 app.use(express.json())
-app.use(morgan('tiny'))
+
+morgan.token('post-data', function (req) {
+    return JSON.stringify(req.body)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
 let persons = [
     {
@@ -51,7 +54,7 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    console.log("Person to be added: ", body)
+    //console.log("Person to be added: ", body)
 
     if (!body.name) {
         return response.status(400).json({
