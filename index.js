@@ -14,8 +14,6 @@ morgan.token('post-data', function (req) {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data'))
 
-let persons = []
-
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
@@ -38,9 +36,8 @@ app.get('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', async (request, response) => {
     const body = request.body
-    //console.log("Person to be added: ", body)
 
     if (!body.name) {
         return response.status(400).json({
@@ -50,11 +47,12 @@ app.post('/api/persons', (request, response) => {
         return response.status(400).json({
             error: "Person's phonenumber missing"
         })
-    } else if (persons.find(person => person.name === body.name)) {
+    } else if (await Person.exists({ name: body.name })) {
         return response.status(400).json({
             error: "Name must be unique"
         })
     }
+
     const person = new Person({
         name: body.name,
         phonenumber: body.phonenumber
@@ -88,9 +86,13 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
-    response.send(`<p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}</p>`)
+app.get('/info', async (request, response, next) => {
+    await Person.countDocuments({})
+        .then(numberOfPersons => {
+            response.send(`<p>Phonebook has info for ${numberOfPersons} people</p>
+                <p>${new Date()}</p>`)
+        })
+        .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
