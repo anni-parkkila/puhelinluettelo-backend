@@ -1,0 +1,7 @@
+POST https://telefooniluettelo.onrender.com/api/persons
+Content-Type: application/json
+
+{
+    "name": "Jo",
+    "phonenumber": "08-123-123-123"
+}
