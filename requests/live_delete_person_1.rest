@@ -1,1 +1,0 @@
-DELETE https://telefooniluettelo.onrender.com/api/persons/1
