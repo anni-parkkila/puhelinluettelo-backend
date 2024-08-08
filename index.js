@@ -65,7 +65,11 @@ app.put('/api/persons/:id', async (request, response, next) => {
     { name, phonenumber },
     { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
-      response.json(updatedPerson)
+      if (updatedPerson) {
+        response.json(updatedPerson)
+      } else {
+        response.status(404).end()
+      }
     })
     .catch(error => next(error))
 })
