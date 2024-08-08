@@ -70,8 +70,8 @@ app.put('/api/persons/:id', async (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndDelete(request.params.id)
+app.delete('/api/persons/:id', async (request, response, next) => {
+  await Person.findByIdAndDelete(request.params.id)
     .then(() => {
       response.status(204).end()
     })
